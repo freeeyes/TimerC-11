@@ -43,11 +43,6 @@ public:
 
     bool operator < (const CTimerNodeInfo& ar) const
     {
-        //steady_clock::time_point timer_now = steady_clock::now();
-        //milliseconds ar_interval = duration_cast<milliseconds>(ar.next_time_ - timer_now);
-        //milliseconds this_interval = duration_cast<milliseconds>(this->next_time_ - timer_now);
-
-        //std::cout << "this interval " << this_interlval.count() << "ms" << endl;
         return (this->next_time_ < ar.next_time_);
     }
 
@@ -81,6 +76,9 @@ public:
 
     void display();
 
+    void get_run_list(steady_clock::time_point& timer_now);
+
+private:
     int lcm(int num1, int num2);
     int gcd(int num1, int num2);
 
