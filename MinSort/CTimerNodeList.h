@@ -14,14 +14,11 @@ using namespace std::chrono;
 class CTimerNodeInfo
 {
 public:
-    CTimerNodeInfo() : timer_id_(0), next_time_(steady_clock::now()), begin_time_(steady_clock::now()), timer_interval_(0)
+    CTimerNodeInfo() : timer_id_(0), timer_interval_(0)
     {
-
-    }
-
-    void display_time(steady_clock::time_point& timer)
-    {
-
+        steady_clock::time_point timer_now = steady_clock::now();
+        begin_time_ = timer_now;
+        next_time_  = timer_now;
     }
 
     void Step(steady_clock::time_point& timer_now)
@@ -37,6 +34,7 @@ public:
         }
         else
         {
+            //这里的更新
             next_time_ += timer_interval_;
         }
     }
@@ -47,23 +45,25 @@ public:
     }
 
 public:
-    int timer_id_;
-    steady_clock::time_point next_time_;
-    steady_clock::time_point begin_time_;
-    milliseconds timer_interval_;
+    int timer_id_;                            //定时器ID
+    milliseconds timer_interval_;             //具体时间间隔
+    steady_clock::time_point next_time_;      //下一次执行时间
+    steady_clock::time_point begin_time_;     //定时器开始时间
+
 };
 
 //镜像信息
 class CRunNodeInfo
 {
 public:
-    CRunNodeInfo() : timer_id_(0), curr_time_(steady_clock::now()), timer_interval_(0)
+    CRunNodeInfo() : timer_id_(0), curr_time_(steady_clock::now()), timer_interval_(0), format_timer_interval(0)
     {
     };
 
     int                      timer_id_;
     steady_clock::time_point curr_time_;
     milliseconds             timer_interval_;
+    int                      format_timer_interval;
 };
 
 class CTimerNodeList
@@ -76,7 +76,7 @@ public:
 
     void display();
 
-    void get_run_list(steady_clock::time_point& timer_now);
+    void get_run_list(steady_clock::time_point timer_now = steady_clock::now());
 
 private:
     int lcm(int num1, int num2);
