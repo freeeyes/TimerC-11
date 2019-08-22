@@ -62,8 +62,8 @@ public:
     CTimerEvents timer_event_;
     bool is_run_;
     std::thread thread_;
-    mutable std::mutex thread_wait_mutex_;
     mutable std::mutex thread_mutex_;
+    mutable std::mutex thread_wait_mutex_;
     std::condition_variable condition_;
 };
 

@@ -22,22 +22,23 @@ void Timer_thread_run(CTimerThreadInfo* timer_thread_info)
         {
             //等待下一次唤醒
             timer_thread_info->condition_.wait(lock);
-            std::cout << "[Timer_thread_run]wait wake up" << endl;
+            std::cout << "[Timer_thread_run]wait wake up" << " : " << timer_thread_info->thread_mutex_.try_lock() << endl;
             timer_thread_info->thread_mutex_.unlock();
         }
         else
         {
             //下一次执行时间唤醒
             std::cout << "[Timer_thread_run]wait_for(" << timer_interval.count() << ")" << endl;
-            timer_thread_info->condition_.wait_for(lock, timer_interval);
-            timer_thread_info->thread_mutex_.unlock();
-            std::cout << "[Timer_thread_run]wait_for wake up" << endl;
 
             timer_thread_info->timer_event_.em_timer_events_state_ = em_execute_timer;
             timer_thread_info->timer_event_.timer_id_ = timer_id;
             timer_thread_info->timer_event_.timer_interval_ = milliseconds(0);
 
             std::cout << "[Timer_thread_run]timerid = " << timer_id << endl;
+
+            timer_thread_info->condition_.wait_for(lock, timer_interval);
+            std::cout << "[Timer_thread_run]wait_for wake up" << endl;
+            timer_thread_info->thread_mutex_.unlock();
         }
 
         //唤醒后判断应该做什么（增删改定时器，还是执行执行的定时器）
@@ -75,15 +76,16 @@ bool CTimerEvent::add_timer(int timer_id, milliseconds timer_interval)
 {
     //如果线程没有启动，则启动定时器线程
     run();
+    {
+        timer_thread_info_.thread_mutex_.lock();
 
-    timer_thread_info_.thread_mutex_.lock();
+        timer_thread_info_.timer_event_.em_timer_events_state_ = em_insert_timer;
+        timer_thread_info_.timer_event_.timer_id_ = timer_id;
+        timer_thread_info_.timer_event_.timer_interval_ = timer_interval;
 
-    timer_thread_info_.timer_event_.em_timer_events_state_ = em_insert_timer;
-    timer_thread_info_.timer_event_.timer_id_ = timer_id;
-    timer_thread_info_.timer_event_.timer_interval_ = timer_interval;
-
-    std::cout << "[add_timer]add_timer_id = " << timer_id << endl;
-    timer_thread_info_.condition_.notify_one();
+        std::cout << "[add_timer]add_timer_id = " << timer_id << " : " << timer_thread_info_.thread_mutex_.try_lock() << endl;
+        timer_thread_info_.condition_.notify_one();
+    }
 
     return true;
 }
