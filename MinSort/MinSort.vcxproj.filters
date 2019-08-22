@@ -21,6 +21,12 @@
     <ClInclude Include="CTimerNodeList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CTimerEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="date.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -30,6 +36,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CTimerNodeList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CTimerEvent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

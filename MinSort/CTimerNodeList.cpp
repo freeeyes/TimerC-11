@@ -8,7 +8,7 @@ struct
     }
 } customLess;
 
-CTimerNodeList::CTimerNodeList() : lcm_data_(0)
+CTimerNodeList::CTimerNodeList() : lcm_data_(0), timer_run_list_index_(0)
 {
 }
 
@@ -19,8 +19,8 @@ CTimerNodeList::~CTimerNodeList()
 
 void CTimerNodeList::add_timer_node_info(int timer_id, milliseconds interval)
 {
-    steady_clock::time_point timer_now = steady_clock::now();
     std::shared_ptr<CTimerNodeInfo> timer_node_info = std::make_shared<CTimerNodeInfo>();
+    steady_clock::time_point timer_now = steady_clock::now();
 
     timer_node_info->timer_id_       = timer_id;
     timer_node_info->timer_interval_ = interval;
@@ -29,6 +29,23 @@ void CTimerNodeList::add_timer_node_info(int timer_id, milliseconds interval)
     vec_timer_node_list_.push_back(timer_node_info);
 
     get_run_list(timer_now);
+}
+
+void CTimerNodeList::del_timer_node_info(int timer_id)
+{
+    steady_clock::time_point timer_now = steady_clock::now();
+
+    for (auto it = vec_timer_node_list_.begin(); it != vec_timer_node_list_.end(); it++)
+    {
+        if ((*it)->timer_id_ == timer_id)
+        {
+            vec_timer_node_list_.erase(it);
+
+            get_run_list(timer_now);
+
+            return ;
+        }
+    }
 }
 
 void CTimerNodeList::display()
@@ -43,7 +60,7 @@ void CTimerNodeList::display()
 
     for (auto f : vec_timer_run_list_)
     {
-        std::cout << "timer id (" << f.timer_id_  << ") interval=" << f.timer_interval_.count() << " format interval=" << f.format_timer_interval << endl;
+        std::cout << "timer id (" << f.timer_id_  << ") interval=" << f.timer_interval_.count() << endl;
     }
 
     std::cout << "############" << endl;
@@ -97,26 +114,7 @@ void CTimerNodeList::get_run_list(steady_clock::time_point timer_now)
             vec_timer_temp_node_list_[0].Step(timer_now);
             std::sort(vec_timer_temp_node_list_.begin(), vec_timer_temp_node_list_.end());
 
-            run_node_info.timer_interval_ = duration_cast<milliseconds>(vec_timer_temp_node_list_[0].next_time_ - run_node_info.curr_time_);
-
-            //¶Ô5msÈ¡Õû
-            int int_a = run_node_info.timer_interval_.count() % 10;
-
-            if (int_a != 0)
-            {
-                if (int_a >= 5)
-                {
-                    run_node_info.format_timer_interval = run_node_info.timer_interval_.count() + 10 - int_a;
-                }
-                else
-                {
-                    run_node_info.format_timer_interval = run_node_info.timer_interval_.count() - int_a;
-                }
-            }
-            else
-            {
-                run_node_info.format_timer_interval = run_node_info.timer_interval_.count();
-            }
+            run_node_info.timer_interval_ = duration_cast<microseconds>(vec_timer_temp_node_list_[0].next_time_ - run_node_info.curr_time_);
 
             vec_timer_run_list_.push_back(run_node_info);
         }
@@ -129,6 +127,45 @@ void CTimerNodeList::get_run_list(steady_clock::time_point timer_now)
         run_node_info.timer_id_ = vec_timer_node_list_[0]->timer_id_;
         run_node_info.timer_interval_ = vec_timer_node_list_[0]->timer_interval_;
         vec_timer_run_list_.push_back(run_node_info);
+    }
+}
+
+int CTimerNodeList::get_next_run_timer_interval(int& timer_id, microseconds& timer_interval)
+{
+    int curr_size = (int)vec_timer_run_list_.size();
+
+    //std::cout << "[get_next_run_timer_interval]curr_size = " << curr_size << endl;
+
+    if (curr_size == 0)
+    {
+        return -1;
+    }
+    else if(curr_size == 1)
+    {
+        timer_interval = vec_timer_run_list_[0].timer_interval_;
+        timer_id       = vec_timer_run_list_[0].timer_id_;
+        return 0;
+    }
+    else
+    {
+        if (timer_run_list_index_ == 0)
+        {
+            timer_interval = vec_timer_run_list_[curr_size - 1].timer_interval_;
+            timer_id       = vec_timer_run_list_[0].timer_id_;
+        }
+        else
+        {
+            timer_interval = vec_timer_run_list_[timer_run_list_index_ - 1].timer_interval_;
+            timer_id = vec_timer_run_list_[timer_run_list_index_].timer_id_;
+        }
+
+        if (timer_run_list_index_++ >= curr_size)
+        {
+            timer_run_list_index_ = 0;
+        }
+
+        //std::cout << "[get_next_run_timer_interval]timer_run_list_index_ = " << timer_run_list_index_ << endl;
+        return 0;
     }
 }
 

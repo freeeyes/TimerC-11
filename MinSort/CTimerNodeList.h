@@ -34,7 +34,6 @@ public:
         }
         else
         {
-            //这里的更新
             next_time_ += timer_interval_;
         }
     }
@@ -56,14 +55,13 @@ public:
 class CRunNodeInfo
 {
 public:
-    CRunNodeInfo() : timer_id_(0), curr_time_(steady_clock::now()), timer_interval_(0), format_timer_interval(0)
+    CRunNodeInfo() : timer_id_(0), curr_time_(steady_clock::now()), timer_interval_(0)
     {
     };
 
     int                      timer_id_;
     steady_clock::time_point curr_time_;
-    milliseconds             timer_interval_;
-    int                      format_timer_interval;
+    microseconds             timer_interval_;
 };
 
 class CTimerNodeList
@@ -73,10 +71,13 @@ public:
     ~CTimerNodeList();
 
     void add_timer_node_info(int timer_id, milliseconds interval);
+    void del_timer_node_info(int timer_id);
 
     void display();
 
     void get_run_list(steady_clock::time_point timer_now = steady_clock::now());
+
+    int get_next_run_timer_interval(int& timer_id, microseconds& timer_interval);
 
 private:
     int lcm(int num1, int num2);
@@ -86,5 +87,6 @@ public:
     vector<std::shared_ptr<CTimerNodeInfo>> vec_timer_node_list_;
     vector<CRunNodeInfo> vec_timer_run_list_;
     int lcm_data_;
+    int timer_run_list_index_;
 };
 #endif
