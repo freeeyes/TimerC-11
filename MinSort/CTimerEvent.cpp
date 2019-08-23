@@ -54,14 +54,14 @@ void Timer_thread_run(CTimerThreadInfo* timer_thread_info)
         //唤醒后判断应该做什么（增删改定时器）
         vector<CTimerEvents> timer_events_temp_list_;
 
-        //timer_thread_info->thread_mutex_.lock();
+        timer_thread_info->thread_mutex_.lock();
 
         if (timer_thread_info->timer_events_list_.size() > 0)
         {
             timer_events_temp_list_.swap(timer_thread_info->timer_events_list_);
         }
 
-        //timer_thread_info->thread_mutex_.unlock();
+        timer_thread_info->thread_mutex_.unlock();
 
         for (auto f : timer_events_temp_list_)
         {
@@ -86,16 +86,16 @@ void Timer_thread_run(CTimerThreadInfo* timer_thread_info)
     timer_thread_info->is_run_ = false;
 }
 
-CTimerEvent::CTimerEvent()
+CTimerManager::CTimerManager()
 {
 }
 
 
-CTimerEvent::~CTimerEvent()
+CTimerManager::~CTimerManager()
 {
 }
 
-bool CTimerEvent::add_timer(int timer_id, milliseconds timer_interval)
+bool CTimerManager::add_timer(int timer_id, milliseconds timer_interval)
 {
     //如果线程没有启动，则启动定时器线程
     run();
@@ -115,7 +115,7 @@ bool CTimerEvent::add_timer(int timer_id, milliseconds timer_interval)
     return true;
 }
 
-bool CTimerEvent::del_timer(int timer_id)
+bool CTimerManager::del_timer(int timer_id)
 {
     timer_thread_info_.thread_mutex_.lock();
 
@@ -131,7 +131,7 @@ bool CTimerEvent::del_timer(int timer_id)
     return true;
 }
 
-void CTimerEvent::run()
+void CTimerManager::run()
 {
     if(timer_thread_info_.is_run_ == false)
     {

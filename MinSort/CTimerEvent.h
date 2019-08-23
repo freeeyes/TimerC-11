@@ -67,11 +67,11 @@ public:
     vector<CTimerEvents> timer_events_list_;
 };
 
-class CTimerEvent
+class CTimerManager
 {
 public:
-    CTimerEvent();
-    ~CTimerEvent();
+    CTimerManager();
+    ~CTimerManager();
 
     bool add_timer(int timer_id, milliseconds timer_interval);
 

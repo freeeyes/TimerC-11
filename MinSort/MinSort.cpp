@@ -45,7 +45,7 @@ int main()
     std::cout << "[" << in << "] interval" << endl;
     */
 
-    CTimerEvent timer_events;
+    CTimerManager timer_events;
 
     timer_events.add_timer(1, milliseconds(1000));
     //timer_events.add_timer(2, milliseconds(2000));
