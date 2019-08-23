@@ -59,12 +59,12 @@ public:
     CTimerThreadInfo() : is_run_(false) {};
 
     CTimerNodeList timer_node_list_;
-    CTimerEvents timer_event_;
     bool is_run_;
     std::thread thread_;
-    mutable std::mutex thread_mutex_;
+    std::mutex thread_mutex_;
     mutable std::mutex thread_wait_mutex_;
     std::condition_variable condition_;
+    vector<CTimerEvents> timer_events_list_;
 };
 
 class CTimerEvent

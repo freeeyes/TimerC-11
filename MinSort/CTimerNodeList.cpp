@@ -29,6 +29,8 @@ void CTimerNodeList::add_timer_node_info(int timer_id, milliseconds interval)
     vec_timer_node_list_.push_back(timer_node_info);
 
     get_run_list(timer_now);
+
+    timer_run_list_index_ = 0;
 }
 
 void CTimerNodeList::del_timer_node_info(int timer_id)
@@ -46,6 +48,8 @@ void CTimerNodeList::del_timer_node_info(int timer_id)
             return ;
         }
     }
+
+    timer_run_list_index_ = 0;
 }
 
 void CTimerNodeList::display()
