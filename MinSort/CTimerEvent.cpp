@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "CTimerEvent.h"
 
 void timer_thread_run(CTimerThreadInfo* timer_thread_info)
