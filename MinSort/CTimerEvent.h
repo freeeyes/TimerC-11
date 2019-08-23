@@ -43,7 +43,7 @@ inline std::string get_curr_time()
 class CTimerEvents
 {
 public:
-    CTimerEvents() : em_timer_events_state_(em_execute_timer), timer_id_(0), timer_interval_(0)
+    CTimerEvents() : em_timer_events_state_(em_execute_timer), timer_id_(0), timer_interval_(0), function_arg_(nullptr)
     {
 
     }
@@ -51,12 +51,24 @@ public:
     em_timer_events_state em_timer_events_state_;
     int timer_id_;
     milliseconds timer_interval_;
+    TimerFunctor timer_function_;
+    void*        function_arg_;
 };
 
 class CTimerThreadInfo
 {
 public:
     CTimerThreadInfo() : is_run_(false) {};
+
+    void get_timer_events_list(vector<CTimerEvents>& timer_events_temp_list_)
+    {
+        std::lock_guard <std::mutex> lock(thread_mutex_);
+
+        if (timer_events_list_.size() > 0)
+        {
+            timer_events_temp_list_.swap(timer_events_list_);
+        }
+    }
 
     CTimerNodeList timer_node_list_;
     bool is_run_;
@@ -73,7 +85,7 @@ public:
     CTimerManager();
     ~CTimerManager();
 
-    bool add_timer(int timer_id, milliseconds timer_interval);
+    bool add_timer(int timer_id, milliseconds timer_interval, TimerFunctor&& f, void* arg);
 
     bool del_timer(int timer_id);
 

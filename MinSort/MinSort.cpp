@@ -3,6 +3,18 @@
 
 #include "CTimerEvent.h"
 
+void timer_run_1(void* arg)
+{
+    int* data = (int*)arg;
+    cout << "[timer_run_1]" << *data << endl;
+}
+
+void timer_run_2(void* arg)
+{
+    int* data = (int*)arg;
+    cout << "[timer_run_2]" << *data << endl;
+}
+
 int main()
 {
     /*
@@ -47,8 +59,11 @@ int main()
 
     CTimerManager timer_events;
 
-    timer_events.add_timer(1, milliseconds(1000));
-    //timer_events.add_timer(2, milliseconds(2000));
+    int arg_1 = 3;
+    int arg_2 = 4;
+
+    timer_events.add_timer(1, milliseconds(1000), timer_run_1, (void*)&arg_1);
+    timer_events.add_timer(2, milliseconds(2000), timer_run_2, (void*)&arg_2);
 
     getchar();
     return 0;
